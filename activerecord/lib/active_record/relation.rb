@@ -17,7 +17,7 @@ module ActiveRecord
     include FinderMethods, Calculations, SpawnMethods, QueryMethods, Batches, Explain, Delegation
 
     attr_reader :table, :klass, :loaded
-    attr_accessor :default_scoped
+    attr_accessor :default_scoped, :association
     alias :model :klass
     alias :loaded? :loaded
     alias :default_scoped? :default_scoped
@@ -29,6 +29,7 @@ module ActiveRecord
       @implicit_readonly = nil
       @loaded            = false
       @default_scoped    = false
+      @association       = nil
     end
 
     def insert(values)
@@ -570,6 +571,10 @@ module ActiveRecord
         @records.each { |record| record.readonly! } if readonly
       else
         @records = default_scoped.to_a
+      end
+
+      if association
+        @records.each { |record| association.set_inverse_instance(record) }
       end
 
       @loaded = true

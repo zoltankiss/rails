@@ -15,6 +15,7 @@ module ActiveRecord
 
       def scope
         scope = klass.unscoped
+        scope.association = @association
         scope.merge! eval_scope(klass, reflection.scope) if reflection.scope
         add_constraints(scope)
       end

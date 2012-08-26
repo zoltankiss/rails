@@ -35,8 +35,8 @@ module ActiveRecord
     # instantiation of the actual post records.
     class CollectionProxy < Relation
       def initialize(association) #:nodoc:
-        @association = association
         super association.klass, association.klass.arel_table
+        @association = association
         merge! association.scope
       end
 
@@ -896,7 +896,7 @@ module ActiveRecord
       end
 
       # Returns a new array of objects from the collection. If the collection
-      # hasn't been loaded, it fetches the records from the database. 
+      # hasn't been loaded, it fetches the records from the database.
       #
       #   class Person < ActiveRecord::Base
       #     has_many :pets

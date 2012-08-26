@@ -35,6 +35,10 @@ module ActiveRecord
           other = other.with_default_scope
         end
 
+        if other.association
+          relation.association = other.association
+        end
+
         @relation = relation
         @values   = other.values
       end

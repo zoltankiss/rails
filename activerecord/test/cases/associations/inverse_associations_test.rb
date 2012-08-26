@@ -261,8 +261,24 @@ class InverseHasManyTests < ActiveRecord::TestCase
 
   def test_parent_instance_should_be_shared_with_first_and_last_child
     man = Man.first
-    assert man.interests.first.man.equal? man
-    assert man.interests.last.man.equal? man
+    assert man.interests.first.man.equal?(man), "Man should be the same instance when using association.first"
+    assert man.interests.last.man.equal?(man), "Man should be the same instance when using association.last"
+  end
+
+  def test_parent_instance_should_be_shared_with_all_children
+    man = Man.first
+    assert man.interests.to_a.all?{ |interest| interest.man.equal?(man) }, "Man should be the same instance when using association.to_a"
+  end
+
+  def test_parent_instance_should_be_shared_with_first_and_last_child_when_using_scope
+    man = Man.first
+    assert man.interests.by_topic.first.man.equal?(man), "Man should be the same instance when using association.scope.first"
+    assert man.interests.by_topic.last.man.equal?(man), "Man should be the same instance when using association.scope.last"
+  end
+
+  def test_parent_instance_should_be_shared_with_all_children_when_using_scope
+    man = Man.first
+    assert man.interests.by_topic.to_a.all?{ |interest| interest.man.equal?(man) }, "Man should be the same instance when using association.scope.to_a"
   end
 
   def test_trying_to_use_inverses_that_dont_exist_should_raise_an_error
