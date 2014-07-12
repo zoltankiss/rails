@@ -141,7 +141,53 @@ class ObjectTryTest < ActiveSupport::TestCase
 
     assert_raise(NoMethodError) { klass.new.try!(:private_method) }
   end
-  
+
+  class TryChainTest < ActiveSupport::TestCase
+    def setup
+      @parent_class = Class.new do
+        def child_class_instance
+          child_class = Class.new do
+            def grand_child_class_instance
+              grand_child_class = Class.new do
+                def grand_child_class_instance_method
+                  'grand child was here'
+                end
+              end
+              grand_child_class.new
+            end
+
+            def return_nil
+              nil
+            end
+          end
+          child_class.new
+        end
+      end
+    end
+
+    def test_try_chain_without_intermediate_nil_values
+      method_chain = @parent_class.new.
+        try.
+        child_class_instance.
+        grand_child_class_instance.
+        grand_child_class_instance_method.
+        end_try
+
+      assert_equal method_chain, 'grand child was here'
+    end
+
+    def test_try_chain_with_intermediate_nil_values
+      method_chain = @parent_class.new.
+        try.
+        child_class_instance.
+        return_nil.
+        grand_child_class_instance_method.
+        end_try
+
+      assert_equal method_chain, nil
+    end
+  end
+
   def test_try_with_private_method
     klass = Class.new do
       private

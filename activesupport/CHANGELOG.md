@@ -1,3 +1,12 @@
+*   `Object#try` now allows for method chaining without excessive `try` calls.
+    For exmple:
+        Instead of having to write
+        `obj.try(:method1).try(:method2).try(:method3).try(:method4)`
+        we can now write
+        `obj.try.method1.method2.method3.method4.end_try`
+
+    *Zoltan Kiss*
+
 *   `DateTime#to_f` now preserves the fractional seconds instead of always
     rounding to `.0`.
 

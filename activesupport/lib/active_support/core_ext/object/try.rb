@@ -39,8 +39,12 @@ class Object
   # +SimpleDelegator+ will delegate +try+ to the target instead of calling it on
   # delegator itself.
   def try(*a, &b)
-    if a.empty? && block_given?
-      yield self
+    if a.empty?
+      if block_given?
+        yield self
+      else
+        TryWrapper.new(self)
+      end
     else
       public_send(*a, &b) if respond_to?(a.first)
     end
@@ -49,8 +53,12 @@ class Object
   # Same as #try, but will raise a NoMethodError exception if the receiving is not nil and
   # does not implement the tried method.
   def try!(*a, &b)
-    if a.empty? && block_given?
-      yield self
+    if a.empty?
+      if block_given?
+        yield self
+      else
+        TryWrapper.new(self)
+      end
     else
       public_send(*a, &b)
     end
@@ -74,5 +82,21 @@ class NilClass
 
   def try!(*args)
     nil
+  end
+end
+
+class TryWrapper
+  attr_accessor :object
+
+  def initialize(object)
+    self.object = object
+  end
+
+  def method_missing(meth, *args, &block)
+    self.class.new(self.object.send(:try, meth, *args, &block))
+  end
+
+  def end_try
+    self.object
   end
 end
