@@ -28,6 +28,8 @@ require 'models/college'
 require 'models/student'
 require 'models/pirate'
 require 'models/ship'
+require 'models/subscription'
+require 'models/book'
 
 class HasManyAssociationsTestForReorderWithJoinDependency < ActiveRecord::TestCase
   fixtures :authors, :posts, :comments
@@ -49,6 +51,16 @@ class HasManyAssociationsTest < ActiveRecord::TestCase
 
   def setup
     Client.destroyed_client_ids.clear
+  end
+
+  def test_nested_has_many_associations_work_even_with_unpersisted_parent_instance
+    post = Post.new
+    post.author = Author.create!(name: 'david')
+    post.author.books << Book.create!
+    book = post.author.books.first
+    subscription = Subscription.create!
+    book.subscriptions << subscription
+    assert_equal [subscription], post.subscriptions.to_a
   end
 
   def test_sti_subselect_count

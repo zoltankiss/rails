@@ -23,6 +23,8 @@ class Post < ActiveRecord::Base
   scope :limit_by, lambda {|l| limit(l) }
 
   belongs_to :author
+  has_many :books, through: :author
+  has_many :subscriptions, through: :books
 
   belongs_to :author_with_posts, -> { includes(:posts) }, :class_name => "Author", :foreign_key => :author_id
   belongs_to :author_with_address, -> { includes(:author_address) }, :class_name => "Author", :foreign_key => :author_id
