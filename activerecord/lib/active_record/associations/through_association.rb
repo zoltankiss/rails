@@ -73,6 +73,8 @@ module ActiveRecord
         end
 
         def foreign_key_present?
+          puts through_reflection
+          puts through_reflection.chain.last
           through_reflection.chain.last.belongs_to? && !owner[through_reflection.foreign_key].nil?
         end
 
