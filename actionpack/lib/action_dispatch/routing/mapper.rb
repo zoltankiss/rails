@@ -1898,6 +1898,7 @@ module ActionDispatch
                    :shallow, :blocks, :defaults, :options]
 
         attr_reader :parent
+        attr_accessor :hash
 
         def initialize(hash, parent = {})
           @hash = hash
@@ -1919,6 +1920,9 @@ module ActionDispatch
         def []=(k,v)
           @hash[k] = v
         end
+
+        delegate :merge!, to: :hash
+        delegate :merge, to: :hash
       end
 
       def initialize(set) #:nodoc:
